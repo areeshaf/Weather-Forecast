@@ -5,6 +5,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
+import android.widget.TextView;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -16,9 +18,11 @@ import java.net.URL;
 
 public class MainActivity extends AppCompatActivity {
 
+    EditText editText;
+    TextView weatherTextView;
     public void weatherInfo(View view){
         DownloadContent task=new DownloadContent();
-        task.execute("https://samples.openweathermap.org/data/2.5/weather?q=London,uk&appid=b6907d289e10d714a6e88b30761fae22");
+        task.execute("https://samples.openweathermap.org/data/2.5/weather?q="+editText.getText().toString()+"&appid=b6907d289e10d714a6e88b30761fae22");
 
     }
 
@@ -55,11 +59,18 @@ public class MainActivity extends AppCompatActivity {
                 JSONObject jsonObject = new JSONObject(s);
                 String weatherInfo=jsonObject.getString("weather");
                 JSONArray jsonArray=new JSONArray(weatherInfo);
+                String message="";
                 for (int i=0;i<jsonArray.length();i++){
                     JSONObject jsonPart=jsonArray.getJSONObject(i);
-                    Log.i("Main",jsonPart.getString("main"));
-                    Log.i("Description",jsonPart.getString("description"));
+                    String main=jsonPart.getString("main");
+                    String description=jsonPart.getString("description");
+                   // Log.i("Main",jsonPart.getString("main"));
+                    //Log.i("Description",jsonPart.getString("description"));
+                    message=message+main+" : "+description+"\r\n";
 
+                }
+                if(!message.equals("")){
+                    weatherTextView.setText(message);
                 }
             }catch (Exception e){
                 e.printStackTrace();
@@ -71,5 +82,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        editText=findViewById(R.id.editText);
+        weatherTextView=findViewById(R.id.weatherTextView);
     }
 }
