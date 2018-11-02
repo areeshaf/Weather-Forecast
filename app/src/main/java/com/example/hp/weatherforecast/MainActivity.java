@@ -22,7 +22,7 @@ public class MainActivity extends AppCompatActivity {
     TextView weatherTextView;
     public void weatherInfo(View view){
         DownloadContent task=new DownloadContent();
-        task.execute("https://samples.openweathermap.org/data/2.5/weather?q="+editText.getText().toString()+"&appid=b6907d289e10d714a6e88b30761fae22");
+        task.execute("https://openweathermap.org/data/2.5/weather?q="+editText.getText().toString()+"&appid=b6907d289e10d714a6e88b30761fae22");
 
     }
 
@@ -44,6 +44,7 @@ public class MainActivity extends AppCompatActivity {
                     result=result+current;
                     data=reader.read();
                 }
+                Log.i("Result",result);
                 return result;
             }catch (Exception e) {
                 e.printStackTrace();
@@ -58,14 +59,16 @@ public class MainActivity extends AppCompatActivity {
             try {
                 JSONObject jsonObject = new JSONObject(s);
                 String weatherInfo=jsonObject.getString("weather");
+                Log.i("Weather info",weatherInfo);
                 JSONArray jsonArray=new JSONArray(weatherInfo);
                 String message="";
                 for (int i=0;i<jsonArray.length();i++){
                     JSONObject jsonPart=jsonArray.getJSONObject(i);
                     String main=jsonPart.getString("main");
                     String description=jsonPart.getString("description");
-                   // Log.i("Main",jsonPart.getString("main"));
-                    //Log.i("Description",jsonPart.getString("description"));
+                   Log.i("Main",jsonPart.getString("main"));
+                    Log.i("Description",jsonPart.getString("description"));
+                    if(!main.equals("") && !description.equals(""))
                     message=message+main+" : "+description+"\r\n";
 
                 }
