@@ -1,12 +1,15 @@
 package com.example.hp.weatherforecast;
 
+import android.content.Context;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -15,15 +18,23 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
 
 public class MainActivity extends AppCompatActivity {
 
     EditText editText;
     TextView weatherTextView;
     public void weatherInfo(View view){
-        DownloadContent task=new DownloadContent();
-        task.execute("https://openweathermap.org/data/2.5/weather?q="+editText.getText().toString()+"&appid=b6907d289e10d714a6e88b30761fae22");
-
+        try {
+            DownloadContent task = new DownloadContent();
+            String encodedCityName = URLEncoder.encode(editText.getText().toString(), "UTF-8");
+            task.execute("https://openweathermap.org/data/2.5/weather?q=" + encodedCityName + "&appid=b6907d289e10d714a6e88b30761fae22");
+            InputMethodManager methodManager=(InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+            methodManager.hideSoftInputFromWindow(editText.getWindowToken(),0);
+        }catch (Exception e){
+            e.printStackTrace();
+            Toast.makeText(this, "Weather Information Not Available!!", Toast.LENGTH_SHORT).show();
+        }
     }
 
     public class DownloadContent extends AsyncTask<String,Void,String>{
@@ -48,6 +59,7 @@ public class MainActivity extends AppCompatActivity {
                 return result;
             }catch (Exception e) {
                 e.printStackTrace();
+                Toast.makeText(MainActivity.this, "Weather Information Not Available!!", Toast.LENGTH_SHORT).show();
                 return null;
             }
         }
@@ -73,10 +85,14 @@ public class MainActivity extends AppCompatActivity {
 
                 }
                 if(!message.equals("")){
+
                     weatherTextView.setText(message);
                 }
             }catch (Exception e){
+
                 e.printStackTrace();
+                Toast.makeText(MainActivity.this, "Weather Information Not Available!!", Toast.LENGTH_SHORT).show();
+
             }
         }
     }
